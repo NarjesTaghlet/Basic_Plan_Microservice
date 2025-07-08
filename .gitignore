@@ -1,0 +1,76 @@
+# compiled output
+/dist
+/node_modules
+/build
+/terraform/Basic_Plan/DEV/.terraform
+/terraform/Basic_Plan/PROD/.terraform
+/terraform/test
+/terraform/Basic_Plan/DEV/terraform.tfvars
+/terraform/Basic_Plan/PROD/terraform.tfvars
+
+/terraform/Basic_Plan/DEV/terraform.tfstate
+/terraform/Basic_Plan/PROD/terraform.tfstate
+
+/terraform/terraform.tfstate
+
+/terraform/Basic_Plan/DEV/terraform.tfstate.backup
+/terraform/Basic_Plan/PROD/terraform.tfstate.backup
+
+/terraform/backend/.terraform
+/terraform/backend/.terraform.lock.hcl
+/terraform/backend/.terraform.tfstate
+/terraform/backend/.terraform.tfstate.backup
+/terraform/backend/plan
+
+.env
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+
+# Tests
+/coverage
+/.nyc_output
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# temp directory
+.temp
+.tmp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
