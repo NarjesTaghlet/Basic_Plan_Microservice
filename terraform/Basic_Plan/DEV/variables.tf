@@ -63,13 +63,13 @@ variable "cloudflare_api_token" {
   description = "Cloudflare API token"
  // sensitive   = true
   type = string
-  default = "3Gb08qy5BedTuR-X4eX1dxoDYA04TJ5kvTm24sAi"
+  default = ""
 }
 
 variable "cloudflare_zone_id" {
   description = "Cloudflare Zone ID for the domain"
   type = string
-  default ="5d2197b6a8d9c5d878644e281f00d933"
+  default =""
 }
 
 variable "domain_name" {
@@ -98,21 +98,5 @@ variable "disk_name" {
     description = "Bundle ID for the Lightsail instance" 
     type = string
     default = "micro_3_0"
-     }  
 
-
-/*  variable "github_pat" {
-  description = "GitHub Personal Access Token for CodeBuild"
-  type        = string
-  sensitive   = true
- default = "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"
-}
-*/
-
-
-
-# variable "alert_email" {
-#   description = "email "
-
-  
-# }
+     } 

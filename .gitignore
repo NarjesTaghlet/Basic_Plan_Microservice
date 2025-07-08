@@ -22,6 +22,11 @@
 /terraform/backend/.terraform.tfstate.backup
 /terraform/backend/plan
 
+
+/terraform/Basic_Plan/DEV/errored.tfstate
+/terraform/Basic_Plan/PROD/errored.tfstate
+
+
 .env
 # Logs
 logs
