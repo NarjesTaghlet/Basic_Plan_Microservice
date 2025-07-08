@@ -19,6 +19,8 @@
 /terraform/backend/.terraform
 /terraform/backend/.terraform.lock.hcl
 /terraform/backend/.terraform.tfstate
+/terraform/backend/terraform.tfstate
+
 /terraform/backend/.terraform.tfstate.backup
 /terraform/backend/plan
 
