@@ -140,7 +140,6 @@ export class DeploymentService {
   private readonly webhookUrl = 'https://3e1d-2c0f-f698-4097-5566-4560-c960-b6f0-e696.ngrok-free.app/deployment/github'; // Replace with your ngrok URL
   private readonly cloudflareZoneId = process.env.cloudflare_zone_id;
   private readonly cloudflareApiToken = process.env.CLOUDFLARE_API_TOKEN;
-  private readonly userServiceUrl = 'http://localhost:3030'
   private codeStarConnectionsClient: CodeStarConnectionsClient; // Add client for CodeStar Connections
 
   constructor(
@@ -202,9 +201,11 @@ export class DeploymentService {
   }
 
   private async getUserById(userId: number) {
+        const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:3030';
+
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${this.userServiceUrl}/user/userid/${userId}`),
+        this.httpService.get(`${userServiceUrl}/user/userid/${userId}`),
       );
       return response.data; // Suppose que la réponse contient { id, username, githubToken, ... }
     } catch (error) {

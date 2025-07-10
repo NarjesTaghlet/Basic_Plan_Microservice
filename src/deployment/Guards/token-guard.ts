@@ -13,9 +13,12 @@ export class TokenGuard implements CanActivate {
       throw new HttpException('No token provided', HttpStatus.UNAUTHORIZED);
     }
 
+  const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:3030';
+
+
     try {
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:3030/auth/verify', { access_token }, {
+        this.httpService.post(`${userServiceUrl}/auth/verify`, { access_token }, {
           headers: { 'Content-Type': 'application/json' },
         }),
       );
