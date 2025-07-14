@@ -1,18 +1,12 @@
 import { Controller, Post, Body, HttpException, HttpStatus,Delete,Get,Req,Query,Res } from '@nestjs/common';
 import { DeploymentService } from './deployment.service';
-import { DeployInfrastructureDto } from './dtos/deployinterface.dto';
 import logger from '../utils/logger';
-import { Headers } from '@nestjs/common'; // Pour le décorateur
 import { Param } from '@nestjs/common';
 import { Deployment } from './entities/deployment.entity';
 //import { Request } from 'aws-sdk';
 import { Request, UseGuards } from '@nestjs/common';
 import { TokenGuard } from './Guards/token-guard';
-import { AxiosResponse } from 'axios';
-import { AwsCredentialsResponse } from './interfaces/aws-credentials.interface';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import { CreateCodeBuildDto } from './dtos/createbuild.dto';
 
 interface TestCodePipelineDto {
   userId: number;
