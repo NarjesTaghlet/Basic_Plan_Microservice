@@ -1,21 +1,12 @@
 import { HttpService } from '@nestjs/axios';
 import { spawn } from 'child_process';
-import { mkdirSync } from 'fs';
 import {  resolve } from 'path';
 import { Repository } from 'typeorm';
-import { ConflictException } from '@nestjs/common';
-import { S3,HeadBucketCommand,S3Client,CreateBucketCommand } from '@aws-sdk/client-s3';
-import { UpdateAssumeRolePolicyCommand,IAMClient ,PutRolePolicyCommand} from '@aws-sdk/client-iam';
+import {HeadBucketCommand,S3Client,CreateBucketCommand } from '@aws-sdk/client-s3';
+import { IAMClient ,PutRolePolicyCommand} from '@aws-sdk/client-iam';
 import { CreateRoleCommand } from '@aws-sdk/client-iam';
-import { CloudWatchClient, GetMetricDataCommand } from '@aws-sdk/client-cloudwatch';
 import {
   CodePipelineClient,
-  CreatePipelineCommand,
-  CreatePipelineCommandInput,
-  UpdatePipelineCommand,
-
-  GetPipelineCommand,
-  StartPipelineExecutionCommand // Import GetPipelineCommand
 } from '@aws-sdk/client-codepipeline';
 import {
   CodeBuildClient,
@@ -40,9 +31,6 @@ import {
   AttachStaticIpCommand,
   StopInstanceCommand,
   DeleteInstanceCommand,
-  CreateDiskSnapshotCommand,
-  GetDiskSnapshotCommand,
-  CreateDiskFromSnapshotCommand,
   GetDiskSnapshotsCommand,
   DeleteDiskSnapshotCommand,
   GetInstanceSnapshotsCommand,
@@ -53,27 +41,20 @@ import {
   import {  GetSecretValueCommand,PutSecretValueCommand , UpdateSecretCommand ,CreateSecretCommand } from '@aws-sdk/client-secrets-manager';
 import { firstValueFrom } from 'rxjs';
 import {InjectRepository} from "@nestjs/typeorm";
-import { existsSync, unlinkSync, writeFileSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Deployment } from './entities/deployment.entity'; // Adaptez le chemin
+
 import { 
-  ExecSyncOptionsWithBufferEncoding 
-} from 'child_process';
-import { 
-  mkdtempSync, 
+
   readFileSync, 
-  rmSync, 
 } from 'fs';
-import { tmpdir } from 'os';
 import { join } from 'path';
 
 import * as AWS from 'aws-sdk';
 import * as path from 'path';
 import logger from 'src/utils/logger';
 import { execSync } from 'child_process';
-import { AxiosResponse , AxiosError} from 'axios';
-import { AwsCredentialsResponse } from './interfaces/aws-credentials.interface';
 import * as dotenv from 'dotenv' ;
 import * as crypto from 'crypto';
 import { promisify } from 'util';
@@ -83,14 +64,10 @@ import { NotFoundException } from '@nestjs/common';
 import { SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import {
   CodeStarConnectionsClient,
-  ListConnectionsCommand,
-  CreateConnectionCommand, // Import CreateConnectionCommand
+  
 } from '@aws-sdk/client-codestar-connections';
 import { HttpException,HttpStatus } from '@nestjs/common';
 
-import simpleGit from 'simple-git';
-// Define the execPromise utility for running Terraform commands
-const execPromise = promisify(exec);
 
 dotenv.config();
 const execAsync = promisify(exec);
@@ -3200,6 +3177,73 @@ async getPatStatus(userId: number): Promise<{
     client?.destroy();
   }
 }
+
+async getPatStatuss(userId: number,pat:string): Promise<{ 
+  exists: boolean; 
+  valid?: boolean;
+  expiry?: string;
+  isValid: boolean;
+}> {
+
+  try {
+    // 1. Get AWS credentials
+   // 1. Get temporary credentials from user service
+        const data = await this.fetchTempCredentials(userId);
+
+         const { accessKeyId, secretAccessKey, sessionToken } = data;
+
+  
+    console.log("pat",pat)
+
+    // 4. Validate with GitHub API
+    const response = await firstValueFrom(
+      this.httpService.get('https://api.github.com/user', {
+        headers: { Authorization: `token ${pat}` },
+      }),
+    );
+
+    // 5. Extract and verify expiration
+    const expiryHeader = response.headers['github-authentication-token-expiration'];
+    const expiryDate = new Date(expiryHeader.replace(' UTC', '') + 'Z');
+    const currentDate = new Date();
+    const isExpired = expiryDate <= currentDate;
+
+    // 6. Final validity check
+    const isValid = !isExpired && response.status === 200;
+
+    return {
+      exists: true,
+      valid: true,
+      expiry: expiryDate.toISOString(),
+      isValid
+    };
+
+  } catch (error) {
+    if (error.name === 'ResourceNotFoundException') {
+      return { exists: false, isValid: false };
+    }
+    
+    // Handle API validation failures
+    if (error.response?.status === 401) {
+      return {
+        exists: true,
+        valid: false,
+        expiry: undefined,
+        isValid: false
+      };
+    }
+
+    return {
+      exists: true,
+      valid: false,
+      expiry: undefined,
+      isValid: false
+    };
+  } finally {
+ 
+  }
+}
+
 
 
 async isSiteNameUnique(siteName: string): Promise<{ available: boolean }> {
