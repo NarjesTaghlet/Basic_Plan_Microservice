@@ -14,7 +14,7 @@ RUN npm install -g @nestjs/cli --legacy-peer-deps
 
 
 # Install production dependencies and clean npm cache to reduce image size
-RUN npm ci --production  --legacy-peer-deps  && npm cache clean --force
+RUN npm ci   --legacy-peer-deps  && npm cache clean --force
 
 # Copy application code
 COPY . .
