@@ -8,6 +8,9 @@ WORKDIR /app
 # Copy package.json and package-lock.json (if available) for reproducible builds
 COPY package*.json ./
 
+RUN npm install -g @nestjs/cli --legacy-peer-deps
+
+
 # Install production dependencies and clean npm cache to reduce image size
 RUN npm ci --production  --legacy-peer-deps  && npm cache clean --force
 
