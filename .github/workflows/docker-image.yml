@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set DockerHub username
-        run: echo "USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> $GITHUB_ENV
+        run: echo "USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
 
       - name: Build Docker image
         run: docker build -t $USERNAME/basicplan-service:latest .
