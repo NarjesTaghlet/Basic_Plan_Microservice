@@ -8,13 +8,11 @@ import { Deployment } from './entities/deployment.entity';
 //import { Request } from 'aws-sdk';
 import { Request, UseGuards } from '@nestjs/common';
 import { TokenGuard } from './Guards/token-guard';
-import { Response } from 'express';
-import { AxiosResponse , AxiosError} from 'axios';
+import { AxiosResponse } from 'axios';
 import { AwsCredentialsResponse } from './interfaces/aws-credentials.interface';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { CreateCodeBuildDto } from './dtos/createbuild.dto';
-import { Token } from 'aws-sdk';
 
 interface TestCodePipelineDto {
   userId: number;

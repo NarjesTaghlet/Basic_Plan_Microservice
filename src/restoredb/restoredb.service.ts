@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { RDSClient,CreateDBSnapshotCommand } from '@aws-sdk/client-rds';
+import { RDSClient } from '@aws-sdk/client-rds';
 import { GetRelationalDatabaseSnapshotsCommand } from '@aws-sdk/client-lightsail';
-import { type UpdateRelationalDatabaseCommandInput } from "@aws-sdk/client-lightsail";
 import { randomBytes } from 'crypto';
 import {
   CodeBuildClient,
@@ -18,15 +17,12 @@ import {
   ModifyDBInstanceCommand
 } from '@aws-sdk/client-rds';
 import { HttpService } from '@nestjs/axios';
-import { AxiosResponse , AxiosError} from 'axios';
-import { AwsCredentialsResponse } from 'src/deployment/interfaces/aws-credentials.interface';
-import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
+
 import {  PutSecretValueCommand,CreateSecretCommand} from '@aws-sdk/client-secrets-manager';
 import { firstValueFrom } from 'rxjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Deployment } from 'src/deployment/entities/deployment.entity';
-import {  Logger , BadRequestException } from '@nestjs/common';
 import { LightsailClient, CreateRelationalDatabaseSnapshotCommand, GetRelationalDatabaseSnapshotCommand, CreateRelationalDatabaseFromSnapshotCommand,UpdateRelationalDatabaseCommand, DeleteRelationalDatabaseCommand, GetRelationalDatabaseCommand } from '@aws-sdk/client-lightsail';
 import { SecretsManagerClient, GetSecretValueCommand, UpdateSecretCommand } from '@aws-sdk/client-secrets-manager';
 import * as dotenv from 'dotenv' ;
