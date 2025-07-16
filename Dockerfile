@@ -10,6 +10,9 @@ COPY package*.json ./
 # Étape 4 : installer toutes les dépendances (axios compris)
 RUN npm install --legacy-peer-deps
 
+RUN npm install --save @types/axios
+
+
 
 COPY . .
 
