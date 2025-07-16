@@ -12,6 +12,8 @@ RUN npm install --legacy-peer-deps
 
 RUN npm install --save @types/axios
 
+RUN npm install --save @nestjs/axios
+
 
 
 COPY . .
