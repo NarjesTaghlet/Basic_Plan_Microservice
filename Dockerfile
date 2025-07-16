@@ -10,6 +10,8 @@ COPY package*.json ./
 # Étape 4 : installer toutes les dépendances (axios compris)
 RUN npm install --legacy-peer-deps
 
+RUN npm list axios || { echo "axios missing!"; exit 1; }
+
 RUN npm install --save @types/axios
 
 RUN npm install --save @nestjs/axios
