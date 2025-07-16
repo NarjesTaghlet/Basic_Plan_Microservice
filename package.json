@@ -43,6 +43,7 @@
     "aws-sdk": "^2.1692.0",
     "axios": "^1.10.0",
     "class-validator": "^0.14.1",
+    "crypto": "^1.0.1",
     "dotenv": "^16.5.0",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.2.0",
