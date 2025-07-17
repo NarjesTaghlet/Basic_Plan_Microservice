@@ -38,8 +38,12 @@ export class Deployment {
 
   @CreateDateColumn({
     type: 'timestamp',
+    precision: 0,
     default: () => 'CURRENT_TIMESTAMP',
-    precision: 0  // Supprime les décimales si non nécessaires
+    transformer: {
+      to: (value: Date) => value,
+      from: (value: Date) => value
+    }
   })
   createdAt: Date;
 
