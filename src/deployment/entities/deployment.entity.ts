@@ -60,12 +60,9 @@ updatedAt: Date;
   @Column({ nullable: true })
   secretsManagerArn_test: string;
 
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
-  updatedAt_dev: Date;
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+updatedAt_dev: Date;
 
   @Column({ nullable: true, type: 'text' })
   sshPrivateKey_dev: string;
