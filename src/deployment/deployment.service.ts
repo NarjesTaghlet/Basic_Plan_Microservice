@@ -384,11 +384,7 @@ const devTerraformDir = resolve('terraform', 'Basic_Plan', 'DEV');
 const infraResult_dev = await this.deployInfrastructure(deployment.userId, deployment.siteName, githubResult.userRepoUrl, devTerraformDir,keyDev,prodregion);
 
  
-    // Step 2: Trigger GitHub Pipeline
-    const token = process.env.testtoken; // Nom standard
-    if (!token) {
-      throw new Error('GitHub PAT manquant dans .env');
-    }
+
 
     // Step 3: Mise à jour de la base de données
     deployment.instanceName = infraResult.instanceName;
