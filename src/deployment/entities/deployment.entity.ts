@@ -36,24 +36,13 @@ export class Deployment {
   @Column({ nullable: true })
   secretsManagerArn: string;
 
-  @CreateDateColumn({
-    type: 'timestamp',
-    precision: 0,
-    default: () => 'CURRENT_TIMESTAMP',
-    transformer: {
-      to: (value: Date) => value,
-      from: (value: Date) => value
-    }
-  })
-  createdAt: Date;
+@Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+createdAt: Date;
 
-  @UpdateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-    
-  })
-  updatedAt: Date;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+updatedAt: Date;
+
 
   @Column({ nullable: true, type: 'text' })
   sshPrivateKey: string; 
