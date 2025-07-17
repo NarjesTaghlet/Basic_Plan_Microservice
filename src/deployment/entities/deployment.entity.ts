@@ -36,13 +36,8 @@ export class Deployment {
   @Column({ nullable: true })
   secretsManagerArn: string;
 
-  @CreateDateColumn({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-        precision: 6,  // Ajouter la précision
-
-  })
-  createdAt: Date;
+ @Column({ type: 'timestamp' })
+   createdAt: Date;
 
   @UpdateDateColumn({
     type: 'timestamp',
