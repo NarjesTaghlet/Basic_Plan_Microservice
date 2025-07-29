@@ -84,8 +84,8 @@ export class DeploymentController {
 
 
   // deployment.controller.ts
-/*@Post('prepare-backend/:userId')
-async prepareRemoteBackend(
+@Post('prepare-backend/:userId')
+async prepareRemoteBackendd(
   @Param('userId') userId: number
 ) {
   try {
@@ -100,7 +100,7 @@ async prepareRemoteBackend(
     };
   } catch (error) {
   }
-}*/
+}
 
 
 
@@ -291,7 +291,7 @@ async getDeploymentStatus(@Param('id') id: number) {
     }
   }*/
 
-    @Delete(':id')
+@Delete(':id')
 async delete(@Param('id') id: string): Promise<{ message: string }> {
   const deploymentId = parseInt(id);
 
