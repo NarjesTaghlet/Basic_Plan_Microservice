@@ -157,6 +157,17 @@ async prepareRemoteBackend(
       selectedStack,
     );
   }
+
+    @Get('status/:id')
+@UseGuards(TokenGuard)
+async getDeploymentStatus(@Param('id') id: number) {
+
+ const result =  this.deploymentService.getDeploymentStatus(id)
+
+
+  return result;
+}
+
   
 /*  @UseGuards(TokenGuard)
   @Post('deploy')
@@ -268,7 +279,7 @@ async prepareRemoteBackend(
     }
   }
 
-  @Delete(':id')
+  /*@Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     try {
       await this.deploymentService.deleteSite(parseInt(id));
@@ -278,7 +289,19 @@ async prepareRemoteBackend(
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-  }
+  }*/
+
+    @Delete('deployment/:id')
+async delete(@Param('id') id: string): Promise<{ message: string }> {
+  const deploymentId = parseInt(id);
+
+  // Trigger deletion logic asynchronously
+  this.deploymentService.deleteSite(deploymentId).catch((error) => {
+    console.error(`Async deletion failed: ${error.message}`);
+  });
+
+  return { message: `Deletion initiated for deployment ${deploymentId}` };
+}
 
 
  /* @Post('create')

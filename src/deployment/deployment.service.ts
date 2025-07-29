@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import {HeadBucketCommand,S3Client,CreateBucketCommand } from '@aws-sdk/client-s3';
 import { IAMClient ,PutRolePolicyCommand} from '@aws-sdk/client-iam';
 import { CreateRoleCommand } from '@aws-sdk/client-iam';
+import * as os from 'os';
 import {
   CodePipelineClient,
 } from '@aws-sdk/client-codepipeline';
@@ -207,7 +208,7 @@ export class DeploymentService {
     };
   }
 
- async createDeployment(userId: number, siteName: string, cloudflareDomain: string, selectedStack: string ): Promise<Deployment> {
+ /*async createDeployment(userId: number, siteName: string, cloudflareDomain: string, selectedStack: string ): Promise<Deployment> {
     // Create the deployment record with initial status "Pending"
     const deployment = this.deploymentRepository.create({
       userId,
@@ -248,7 +249,59 @@ export class DeploymentService {
 
     return deployment;
   }
-    
+    */
+   async createDeployment(
+  userId: number,
+  siteName: string,
+  cloudflareDomain: string,
+  selectedStack: string
+): Promise<{ deploymentId: number }> {
+  // 🔤 Nettoyer le nom du site
+  const SiteName = siteName.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+
+  // 🗂️ Créer le déploiement dans la BDD
+  const deployment = this.deploymentRepository.create({
+    userId,
+    siteName: SiteName,
+    cloudflareDomain,
+    selectedStack,
+    status: 'Pending',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  await this.deploymentRepository.save(deployment);
+
+  // 🔁 Déclenche Terraform en arrière-plan (non bloquant)
+  this.deployInfrastructureAndSetupGitHub(deployment)
+    .then(async () => {
+      deployment.status = 'Active';
+      deployment.updatedAt = new Date();
+      await this.deploymentRepository.save(deployment);
+      console.log(`✅ Deployment ${deployment.id} completed`);
+    })
+    .catch(async (error) => {
+      deployment.status = 'Failed';
+      deployment.updatedAt = new Date();
+      await this.deploymentRepository.save(deployment);
+      console.error(`❌ Deployment ${deployment.id} failed:`, error.message);
+    });
+
+  // ✅ Réponse immédiate pour le frontend
+  return { deploymentId: deployment.id };
+}
+
+      async getDeploymentStatus( id: number) {
+        const deployment = await this.deploymentRepository.findOneBy({ id });
+      
+        if (!deployment) {
+          throw new NotFoundException('Deployment not found');
+        }
+      
+        return { status: deployment.status };
+      }
+
+
 
  /* async deployInfrastructureAndSetupGitHub(deploymentData: { userId: number, siteName: string, cloudflareDomain: string , selectedStack: string }) {
     const { userId, siteName, cloudflareDomain, selectedStack } = deploymentData;
@@ -1274,13 +1327,19 @@ try {
       await this.cleanupScheduledSecrets(userId, siteName);
 
       // Step 12: Clean up profile
-      const awsCredentialsPath = path.join(process.env.USERPROFILE, '.aws', 'credentials');
-      if (fs.existsSync(awsCredentialsPath)) {
-        let credentialsContent = fs.readFileSync(awsCredentialsPath, 'utf-8');
-        credentialsContent = credentialsContent.replace(new RegExp(`\\[${tempProfile}\\][\\s\\S]*?(?=\\[|$)`, 'g'), '');
-        fs.writeFileSync(awsCredentialsPath, credentialsContent.trim());
-        logger.info(`Removed profile: ${tempProfile}`);
-      }
+         const awsCredentialsPath = path.join(os.homedir(), '.aws', 'credentials');
+
+if (fs.existsSync(awsCredentialsPath)) {
+  let credentialsContent = fs.readFileSync(awsCredentialsPath, 'utf-8');
+
+  // Supprimer uniquement le bloc du profil temporaire
+  const regex = new RegExp(`\\[${tempProfile}\\][\\s\\S]*?(?=\\[|$)`, 'g');
+  const updatedContent = credentialsContent.replace(regex, '').trim();
+
+  fs.writeFileSync(awsCredentialsPath, updatedContent);
+  logger.info(`✅ Removed AWS CLI profile: ${tempProfile}`);
+}
+    
 
       // Step 13: Delete from database
       logger.info(`Deleted deployment ${deploymentId} from database`);
@@ -2851,12 +2910,19 @@ await runTerraformCommand(['validate'], terraformDir, env);
       console.log('Terraform Outputs:', JSON.stringify(outputs, null, 2));
   
       // 9. Clean up AWS profile
-      const credsPath = join(process.env.USERPROFILE, '.aws', 'credentials');
-      if (existsSync(credsPath)) {
-        let content = readFileSync(credsPath, 'utf-8');
-        content = content.replace(new RegExp(`\\[${tempProfile}\\][\\s\\S]*?(?=\\[|$)`, 'g'), '');
-        writeFileSync(credsPath, content.trim());
-      }
+      const awsCredentialsPath = path.join(os.homedir(), '.aws', 'credentials');
+
+if (fs.existsSync(awsCredentialsPath)) {
+  let credentialsContent = fs.readFileSync(awsCredentialsPath, 'utf-8');
+
+  // Supprimer uniquement le bloc du profil temporaire
+  const regex = new RegExp(`\\[${tempProfile}\\][\\s\\S]*?(?=\\[|$)`, 'g');
+  const updatedContent = credentialsContent.replace(regex, '').trim();
+
+  fs.writeFileSync(awsCredentialsPath, updatedContent);
+  logger.info(`✅ Removed AWS CLI profile: ${tempProfile}`);
+}
+    
   
       logger.info(`✅ Deployment completed for user ${userId}, site "${siteName}"`);
 
