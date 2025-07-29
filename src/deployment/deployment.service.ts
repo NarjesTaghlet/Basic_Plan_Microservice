@@ -3523,11 +3523,11 @@ const metrics = [
   //const env = { ...process.env, AWS_PROFILE: tempProfile };
   // Run terraform plan
   const planCommand = `terraform plan -out=plan  -var="account_id=${accountId}" -var="aws_access_key_id=${accessKeyId}" -var="aws_secret_access_key=${secretAccessKey}" -var="aws_session_token=${sessionToken}" -var="user_id=${userId}"`;
-  execSync(planCommand, { cwd: terraformDir ,stdio: 'inherit', env: { ...process.env, AWS_PROFILE: tempProfile } });
+  execSync(planCommand, { cwd: terraformDir ,stdio: 'inherit', env });
 
   // Run terraform apply
   const applyCommand = `terraform apply -auto-approve  -var="account_id=${accountId}" -var="account_id=${accountId}" -var="aws_access_key_id=${accessKeyId}" -var="aws_secret_access_key=${secretAccessKey}" -var="aws_session_token=${sessionToken}" -var="user_id=${userId}"`;
-  execSync(applyCommand, { cwd: terraformDir ,stdio: 'inherit', env: { ...process.env, AWS_PROFILE: tempProfile } });
+  execSync(applyCommand, { cwd: terraformDir ,stdio: 'inherit', env});
 
 
 

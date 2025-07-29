@@ -129,6 +129,17 @@ resource "aws_iam_policy" "terraform_backend_access" {
         ],
         Resource = "arn:aws:dynamodb:us-east-1:*:table/terraform-locks-user"
       },
+        {
+        Effect = "Allow",
+        Action = [
+          "s3:GetEncryptionConfiguration",
+          "s3:PutEncryptionConfiguration"
+        ],
+        Resource = [
+          "arn:aws:s3:::terraform-state-user",
+          "arn:aws:s3:::terraform-state-user/*"
+        ]
+      },
       {
   "Effect": "Allow",
   "Action": [
