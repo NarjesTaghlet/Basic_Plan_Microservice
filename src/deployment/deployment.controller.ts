@@ -291,7 +291,7 @@ async getDeploymentStatus(@Param('id') id: number) {
     }
   }*/
 
-    @Delete('deployment/:id')
+    @Delete(':id')
 async delete(@Param('id') id: string): Promise<{ message: string }> {
   const deploymentId = parseInt(id);
 
