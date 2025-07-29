@@ -1105,7 +1105,7 @@ try {
     let lightsailClient: LightsailClient | undefined;
     const workspaceName = `user-${userId}-${siteName}`;
     const tempProfile = `temp-subaccount-${userId}-${siteName}`;
-    const env = { ...process.env, AWS_PROFILE: tempProfile, PATH: `${process.env.PATH};C:\\windows\\system32` };
+  //  const env = { ...process.env, AWS_PROFILE: tempProfile, PATH: `${process.env.PATH};C:\\windows\\system32` };
 
     try {
       logger.info(`Starting destruction for user_id ${userId}, site_name ${siteName}, deployment_id ${deploymentId}`);
@@ -1119,6 +1119,13 @@ try {
         const data = await this.fetchTempCredentials(userId);
 
          const { accessKeyId, secretAccessKey, sessionToken } = data;
+
+         const env = {
+  ...process.env,
+  AWS_ACCESS_KEY_ID: accessKeyId,
+  AWS_SECRET_ACCESS_KEY:secretAccessKey,
+  AWS_SESSION_TOKEN: sessionToken,
+};
       logger.info(`Credentials: aws_access_key_id=${accessKeyId}`);
 
       // Step 2: Verify credentials
@@ -1332,7 +1339,7 @@ try {
       await this.cleanupScheduledSecrets(userId, siteName);
 
       // Step 12: Clean up profile
-         const awsCredentialsPath = path.join(os.homedir(), '.aws', 'credentials');
+  const awsCredentialsPath = path.join(os.homedir(), '.aws', 'credentials');
 
 if (fs.existsSync(awsCredentialsPath)) {
   let credentialsContent = fs.readFileSync(awsCredentialsPath, 'utf-8');
@@ -1344,6 +1351,7 @@ if (fs.existsSync(awsCredentialsPath)) {
   fs.writeFileSync(awsCredentialsPath, updatedContent);
   logger.info(`✅ Removed AWS CLI profile: ${tempProfile}`);
 }
+      
     
 
       // Step 13: Delete from database
@@ -2818,7 +2826,15 @@ console.log("Instance exists:", instanceResponse.instance?.name);
         const data = await this.fetchTempCredentials(userId);
 
          const { accessKeyId, secretAccessKey, sessionToken } = data;
+
       logger.info(`🪪 AWS creds loaded for ${userId}`);
+
+     const env = {
+  ...process.env,
+  AWS_ACCESS_KEY_ID: accessKeyId,
+  AWS_SECRET_ACCESS_KEY: secretAccessKey,
+  AWS_SESSION_TOKEN: sessionToken,
+}; 
   
       // 2. Get AWS account ID
       const sts = new AWS.STS({ accessKeyId, secretAccessKey, sessionToken });
@@ -3450,7 +3466,12 @@ const metrics = [
         const data = await this.fetchTempCredentials(userId);
 
          const { accessKeyId, secretAccessKey, sessionToken } = data;
-
+  const env = {
+  ...process.env,
+  AWS_ACCESS_KEY_ID:accessKeyId,
+  AWS_SECRET_ACCESS_KEY: secretAccessKey,
+  AWS_SESSION_TOKEN: sessionToken,
+};
   logger.info(`Temporary Credentials: aws_access_key_id=${accessKeyId}, aws_secret_access_key=${secretAccessKey}, aws_session_token=${sessionToken}`);
 
 
@@ -3478,7 +3499,10 @@ const metrics = [
  
  //process.chdir(terraformDir);
   logger.info(`Changed working directory to ${terraformDir}`);
-  const env = { ...process.env, AWS_PROFILE: tempProfile, PATH: `${process.env.PATH};C:\\windows\\system32` };
+  //const env = { ...process.env, AWS_PROFILE: tempProfile };
+
+
+
 
   // Run terraform init with S3 backend configuration
 // const initCommand = `terraform init -backend-config="bucket=terraform-state-user-id" -backend-config="key=user-${userId}/workspace/site-${siteId}/terraform.tfstate" -backend-config="region=us-east-1" -backend-config="dynamodb_table=terraform-locks"`;
@@ -3508,15 +3532,20 @@ const metrics = [
 
 
   // Step 5: Clean up the temporary profile
-  const awsCredentialsPath = path.join(process.env.USERPROFILE, '.aws', 'credentials');
-  if (fs.existsSync(awsCredentialsPath)) {
-    let credentialsContent = fs.readFileSync(awsCredentialsPath, 'utf-8');
-    credentialsContent = credentialsContent.replace(new RegExp(`\\[${tempProfile}\\][\\s\\S]*?(?=\\[|$)`, 'g'), '');
-    fs.writeFileSync(awsCredentialsPath, credentialsContent.trim());
-    logger.info(`Removed temporary AWS CLI profile: ${tempProfile}`);
-  }
-  
 
+  const awsCredentialsPath = path.join(os.homedir(), '.aws', 'credentials');
+
+if (fs.existsSync(awsCredentialsPath)) {
+  let credentialsContent = fs.readFileSync(awsCredentialsPath, 'utf-8');
+
+  // Supprimer uniquement le bloc du profil temporaire
+  const regex = new RegExp(`\\[${tempProfile}\\][\\s\\S]*?(?=\\[|$)`, 'g');
+  const updatedContent = credentialsContent.replace(regex, '').trim();
+
+  fs.writeFileSync(awsCredentialsPath, updatedContent);
+  logger.info(`✅ Removed AWS CLI profile: ${tempProfile}`);
+}
+      
   // Step 5: Fetch Terraform outputs
   const outputJson = execSync(`terraform output -json`, { cwd: terraformDir, env }).toString();
   const outputs = JSON.parse(outputJson);
