@@ -359,8 +359,8 @@ async setupUserDeployment(
 
    const user = await this.getUserById(userId);
     console.log('helou',user)
-    if (!user || !user.githubToken) {
-      throw new Error('User not found or GitHub token missing');
+    if (!user) {
+      throw new Error('User not found');
     }
     // Récupérer githubUsername
     const githubUserResponse = await firstValueFrom(
@@ -414,6 +414,7 @@ async deployInfrastructureAndSetupGitHub(deployment: Deployment) {
   try {
     
     const userGithubToken = await  this.fetchGitHubPat(deployment.userId)
+    console.log(userGithubToken)
 
     
      // Step 4: Configuration GitHub
