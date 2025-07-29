@@ -112,7 +112,8 @@ resource "aws_iam_policy" "terraform_backend_access" {
           "s3:ListBucket",
           "s3:GetBucketVersioning",  # Add this
           "s3:ListBucketVersions",    # Add this
-          "s3:GetObjectVersion",      # Add this
+          "s3:GetObjectVersion",  
+          "s3:*"    # Add this
         ],
         Resource = [
           "arn:aws:s3:::terraform-state-user",
