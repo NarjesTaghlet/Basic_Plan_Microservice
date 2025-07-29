@@ -1156,10 +1156,10 @@ try {
       logger.info(`Fetched from Secrets Manager: instance_name=${instance_name}, disk_name=${disk_name}`);
 
       // Step 5: Set temporary AWS CLI profile
-      execSync(`aws configure set aws_access_key_id ${accessKeyId} --profile ${tempProfile}`, { stdio: 'inherit', shell: 'cmd.exe' });
-      execSync(`aws configure set aws_secret_access_key ${secretAccessKey} --profile ${tempProfile}`, { stdio: 'inherit', shell: 'cmd.exe' });
-      execSync(`aws configure set aws_session_token ${sessionToken} --profile ${tempProfile}`, { stdio: 'inherit', shell: 'cmd.exe' });
-      execSync(`aws configure set region ${devregion} --profile ${tempProfile}`, { stdio: 'inherit', shell: 'cmd.exe' });
+      execSync(`aws configure set aws_access_key_id ${accessKeyId} --profile ${tempProfile}`, { stdio: 'inherit'});
+      execSync(`aws configure set aws_secret_access_key ${secretAccessKey} --profile ${tempProfile}`, { stdio: 'inherit' });
+      execSync(`aws configure set aws_session_token ${sessionToken} --profile ${tempProfile}`, { stdio: 'inherit'  });
+      execSync(`aws configure set region ${devregion} --profile ${tempProfile}`, { stdio: 'inherit' });
       logger.info(`Created profile: ${tempProfile}`);
 
       // Step 6: Stop the instance if running
