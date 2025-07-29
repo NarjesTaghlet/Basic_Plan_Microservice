@@ -68,6 +68,7 @@ import {
   
 } from '@aws-sdk/client-codestar-connections';
 import { HttpException,HttpStatus } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 
 dotenv.config();
@@ -113,7 +114,7 @@ export class DeploymentService {
   private readonly orgName ='NarjesTg' ;
   private readonly templaterepo = 'Template-Basic'
   //return the real github token 
-  private readonly webhookSecret = process.env.WEBHOOK_SECRET; // Webhook secret
+  //private readonly webhookSecret = process.env.WEBHOOK_SECRET; // Webhook secret
  // private readonly webhookUrl = ' https://ddf0-2c0f-f698-4097-5566-4560-c960-b6f0-e696.ngrok-free.app/api/webhooks/github'; // Replace with your ngrok URL
   private readonly webhookUrl = 'https://3e1d-2c0f-f698-4097-5566-4560-c960-b6f0-e696.ngrok-free.app/deployment/github'; // Replace with your ngrok URL
   private readonly cloudflareZoneId = process.env.cloudflare_zone_id;
@@ -125,9 +126,10 @@ export class DeploymentService {
     private deploymentRepository: Repository<Deployment>,
     //private userService: UserService,
     public httpService: HttpService,
+    private configService : ConfigService
   ) {
 
-    this.githubToken = process.env.GITHUB_PAT;
+   this.githubToken = process.env.GITHUB_PAT;
     this.codeStarConnectionsClient = new CodeStarConnectionsClient({ region: 'us-east-1' });
 
   }
@@ -136,7 +138,8 @@ export class DeploymentService {
       async fetchTempCredentials(userId: number) {
   try {
     // Utilise une variable d'environnement pour l'URL du user-service
-    const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:3030';
+    const userServiceUrl = this.configService.get<string>('USER_SERVICE_URL', 'http://localhost:3030');
+
     const { data } = await firstValueFrom(
       this.httpService.post(`${userServiceUrl}/user/${userId}/connect-aws`, {})
     );
@@ -179,7 +182,8 @@ export class DeploymentService {
   }
 
   private async getUserById(userId: number) {
-        const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:3030';
+        const userServiceUrl = this.configService.get<string>('USER_SERVICE_URL', 'http://localhost:3030');
+
 
     try {
       const response = await firstValueFrom(
@@ -1972,7 +1976,7 @@ async generateUserRepoFromOrgTemplate(
 
 ///////////////////////////////////////////////
 
-  async addWebhookToUserRepo(userGithubToken: string, userRepo: string) {
+/*  async addWebhookToUserRepo(userGithubToken: string, userRepo: string) {
     try {
       const response = await firstValueFrom(
         this.httpService.post(
@@ -1996,36 +2000,15 @@ async generateUserRepoFromOrgTemplate(
       throw new Error(`Webhook setup failed: ${error.message}`);
     }
   }
+*/
 
-  verifySignature(signature: string, payload: any): boolean {
+ /* verifySignature(signature: string, payload: any): boolean {
     const hmac = crypto.createHmac('sha256', this.webhookSecret);
     const digest = `sha256=${hmac.update(JSON.stringify(payload)).digest('hex')}`;
     return signature === digest;
   }
+*/
 
-  async mirrorRepo(userRepoUrl: string, branch: string, orgRepoName: string) {
-    const timestamp = Date.now();
-    const localPath = `/tmp/mirror-${timestamp}`;
-    const orgRepo = `${this.orgName}/${orgRepoName}`;
-    const mirrorUrl = `https://x-access-token:${this.githubToken}@github.com/${orgRepo}.git`;
-
-    console.log(`Mirroring to ${orgRepo}`);
-
-    try {
-      console.log(`[Mirror] Cloning user repo: ${userRepoUrl}`);
-      await execAsync(`git clone --branch ${branch} ${userRepoUrl} ${localPath}`);
-      console.log(`[Mirror] Setting remote to: ${orgRepo}`);
-      await execAsync(`cd ${localPath} && git remote remove origin && git remote add origin ${mirrorUrl}`);
-      console.log(`[Mirror] Pushing to org repo...`);
-      await execAsync(`cd ${localPath} && git push -f origin ${branch}`);
-    } catch (err) {
-      console.error('[Mirror Error]', err);
-      throw new Error(`Mirroring failed: ${err.message}`);
-    } finally {
-      await fs.remove(localPath);
-    }
-  }
-   
 private async getUserRepoUrlFromDB(userId: number): Promise<string> {
   const result = await this.deploymentRepository.find({
     where: { userId },

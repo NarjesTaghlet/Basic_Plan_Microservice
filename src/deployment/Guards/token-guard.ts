@@ -1,10 +1,11 @@
 import { Injectable, CanActivate, ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TokenGuard implements CanActivate {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService, private readonly configService : ConfigService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -13,8 +14,7 @@ export class TokenGuard implements CanActivate {
       throw new HttpException('No token provided', HttpStatus.UNAUTHORIZED);
     }
 
-  const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:3030';
-
+const userServiceUrl = this.configService.get<string>('USER_SERVICE_URL', 'http://localhost:3030');
 
     try {
       const response = await firstValueFrom(
