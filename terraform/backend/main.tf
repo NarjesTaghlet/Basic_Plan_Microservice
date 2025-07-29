@@ -15,7 +15,30 @@ resource "aws_s3_bucket" "terraform_state" {
   }
 }
 //add the s3 bucket for the other region for dev env
-
+# Add this resource block to your main.tf
+resource "aws_s3_bucket_policy" "state_bucket_policy" {
+  bucket = aws_s3_bucket.terraform_state.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${var.account_id}:role/OrganizationAccountAccessRole"
+        }
+        Action = [
+          "s3:GetBucketVersioning",
+          "s3:GetEncryptionConfiguration",
+          "s3:GetBucketPublicAccessBlock",
+          "s3:PutBucketVersioning",
+          "s3:PutEncryptionConfiguration",
+          "s3:PutBucketPublicAccessBlock"
+        ]
+        Resource = aws_s3_bucket.terraform_state.arn
+      }
+    ]
+  })
+}
 
 
 # Enable versioning for the S3 bucket
@@ -113,7 +136,6 @@ resource "aws_iam_policy" "terraform_backend_access" {
           "s3:GetBucketVersioning",  # Add this
           "s3:ListBucketVersions",    # Add this
           "s3:GetObjectVersion",  
-          "s3:*"    # Add this
         ],
         Resource = [
           "arn:aws:s3:::terraform-state-user",
