@@ -17,6 +17,7 @@ resource "aws_s3_bucket" "terraform_state" {
 //add the s3 bucket for the other region for dev env
 
 
+
 # Enable versioning for the S3 bucket
 resource "aws_s3_bucket_versioning" "terraform_state_versioning" {
   bucket = aws_s3_bucket.terraform_state.id
@@ -108,7 +109,10 @@ resource "aws_iam_policy" "terraform_backend_access" {
           "s3:GetObject",
           "s3:PutObject",
           "s3:DeleteObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:GetBucketVersioning",  # Add this
+          "s3:ListBucketVersions",    # Add this
+          "s3:GetObjectVersion",      # Add this
         ],
         Resource = [
           "arn:aws:s3:::terraform-state-user",

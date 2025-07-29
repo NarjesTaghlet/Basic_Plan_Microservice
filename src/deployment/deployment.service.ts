@@ -3463,9 +3463,9 @@ const metrics = [
 
   // Step 1: Get temporary credentials from user-service
  // 1. Get temporary credentials from user service
-        const data = await this.fetchTempCredentials(userId);
+   const data = await this.fetchTempCredentials(userId);
 
-         const { accessKeyId, secretAccessKey, sessionToken } = data;
+  const { accessKeyId, secretAccessKey, sessionToken } = data;
   const env = {
   ...process.env,
   AWS_ACCESS_KEY_ID:accessKeyId,
