@@ -88,6 +88,8 @@ export class DeploymentController {
 async prepareRemoteBackendd(
   @Param('userId') userId: number
 ) {
+
+  console.log("hello from backend")
   try {
     const result = await this.deploymentService.prepareremotebackend(
       userId,

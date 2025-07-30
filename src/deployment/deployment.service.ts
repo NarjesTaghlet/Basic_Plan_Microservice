@@ -3553,7 +3553,7 @@ if (fs.existsSync(awsCredentialsPath)) {
 
   // Step 6: Return the S3 bucket name
   return {
-   
+   outputs
   };
 } catch (error) {
   logger.error(`Failed to deploy infrastructure for user_id , site_name : ${error.message}`);
