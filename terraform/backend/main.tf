@@ -138,8 +138,8 @@ resource "aws_iam_policy" "terraform_backend_access" {
           "s3:GetObjectVersion",  
         ],
         Resource = [
-          "arn:aws:s3:::terraform-state-user-*",
-          "arn:aws:s3:::terraform-state-user-*/*"
+          "arn:aws:s3:::*",
+          "arn:aws:s3:::*"
         ]
       },
       {
@@ -158,8 +158,8 @@ resource "aws_iam_policy" "terraform_backend_access" {
           "s3:PutEncryptionConfiguration"
         ],
         Resource = [
-          "arn:aws:s3:::terraform-state-user-*",
-          "arn:aws:s3:::terraform-state-user-*/*"
+          "arn:aws:s3:::*",
+          "arn:aws:s3:::*"
         ]
       },
       {
