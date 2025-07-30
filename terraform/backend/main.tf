@@ -1,7 +1,7 @@
 
 # Create an S3 bucket for Terraform state storage
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "terraform-state-user"
+  bucket = "terraform-state-user-${var.user_id}"
 
 
   # Prevent accidental deletion of the bucket
@@ -138,8 +138,8 @@ resource "aws_iam_policy" "terraform_backend_access" {
           "s3:GetObjectVersion",  
         ],
         Resource = [
-          "arn:aws:s3:::terraform-state-user",
-          "arn:aws:s3:::terraform-state-user/*"
+          "arn:aws:s3:::terraform-state-user-*",
+          "arn:aws:s3:::terraform-state-user-*/*"
         ]
       },
       {
@@ -158,8 +158,8 @@ resource "aws_iam_policy" "terraform_backend_access" {
           "s3:PutEncryptionConfiguration"
         ],
         Resource = [
-          "arn:aws:s3:::terraform-state-user",
-          "arn:aws:s3:::terraform-state-user/*"
+          "arn:aws:s3:::terraform-state-user-*",
+          "arn:aws:s3:::terraform-state-user-*/*"
         ]
       },
       {

@@ -2808,7 +2808,7 @@ console.log("Instance exists:", instanceResponse.instance?.name);
   }> {
     const tempProfile = `temp-subaccount-${userId}-${siteName}`;
     const workspaceName = `user-${userId}-${siteName}`;
-    const env = { ...process.env, AWS_PROFILE: tempProfile };
+   // const env = { ...process.env, AWS_PROFILE: tempProfile };
   
     try {
       logger.info(`🚀 Starting deployment for user ${userId}, site "${siteName}"`);
@@ -2854,6 +2854,7 @@ console.log("Instance exists:", instanceResponse.instance?.name);
       await runTerraformCommand([
         'init  -upgrade',
         `-backend-config=bucket=terraform-state-user`,
+      //   `-backend-config=bucket=terraform-state-user-${userId}`,
         `-backend-config=key=${key}`,
         `-backend-config=region=${region}`,
         `-backend-config=dynamodb_table=terraform-locks-user`,
